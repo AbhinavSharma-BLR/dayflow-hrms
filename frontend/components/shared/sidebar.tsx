@@ -10,7 +10,6 @@ import {
   CalendarCheck,
   CalendarOff,
   CreditCard,
-  Bell,
   Users,
   BarChart3,
   FileSpreadsheet,
@@ -18,7 +17,7 @@ import {
   Sparkles,
   ChevronLeft,
   ChevronRight,
-  Lock,
+  Shield,
 } from 'lucide-react';
 import { Role } from '@prisma/client';
 import { cn } from '@/lib/utils';
@@ -36,7 +35,6 @@ interface SidebarNavItem {
   badge?: string;
 }
 
-// Active Phase 2, 3 & 4 navigation items
 const employeeNavItems: SidebarNavItem[] = [
   { title: 'Dashboard', href: '/employee/dashboard', icon: LayoutDashboard, active: true },
   { title: 'My Profile', href: '/employee/profile', icon: User, active: true },
@@ -63,31 +61,38 @@ export function Sidebar({ role }: SidebarProps) {
   return (
     <aside
       className={cn(
-        'relative flex flex-col border-r bg-card text-card-foreground transition-all duration-300',
+        'relative flex flex-col border-r border-indigo-950/60 bg-[#0a0524]/95 text-slate-200 backdrop-blur-2xl transition-all duration-300 z-30 select-none shadow-xl',
         collapsed ? 'w-16' : 'w-64'
       )}
     >
+      {/* Ambient background glow */}
+      <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-[#7a3cff]/10 to-transparent pointer-events-none" />
+
       {/* Brand Header */}
-      <div className="flex h-16 items-center justify-between border-b px-4">
+      <div className="flex h-16 items-center justify-between border-b border-indigo-900/40 px-4 relative z-10">
         {!collapsed ? (
-          <Link href="/" className="flex items-center gap-2 font-bold text-lg text-primary tracking-tight">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
+          <Link href="/" className="flex items-center gap-2.5 font-bold text-base tracking-wide group">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#7a3cff] to-[#2bf0ff] text-white shadow-md shadow-[#7a3cff]/30 group-hover:scale-105 transition-transform">
               <Sparkles className="h-4 w-4" />
             </div>
-            <span>Dayflow</span>
-            <span className="text-[10px] rounded border px-1.5 py-0.5 text-muted-foreground font-mono font-normal">
-              {role}
-            </span>
+            <div className="flex flex-col">
+              <span className="font-extrabold text-sm tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-[#8fe6ff]">
+                Dayflow HRMS
+              </span>
+              <span className="text-[10px] font-mono text-[#2bf0ff] font-semibold tracking-wider">
+                {role === Role.HR ? 'ADMIN PORTAL' : 'EMPLOYEE OS'}
+              </span>
+            </div>
           </Link>
         ) : (
-          <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+          <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#7a3cff] to-[#2bf0ff] text-white shadow-md shadow-[#7a3cff]/30">
             <Sparkles className="h-4 w-4" />
           </div>
         )}
         <Button
           variant="ghost"
           size="icon"
-          className="hidden md:flex h-7 w-7"
+          className="hidden md:flex h-7 w-7 text-slate-400 hover:text-white hover:bg-white/10"
           onClick={() => setCollapsed(!collapsed)}
           aria-label="Toggle sidebar collapse"
         >
@@ -96,66 +101,55 @@ export function Sidebar({ role }: SidebarProps) {
       </div>
 
       {/* Navigation items */}
-      <div className="flex-1 overflow-y-auto py-4 px-2 space-y-1">
+      <div className="flex-1 overflow-y-auto py-4 px-2.5 space-y-1.5 relative z-10">
         {items.map((item) => {
           const Icon = item.icon;
-          const isActive = item.active && (pathname === item.href || (item.href !== '#' && pathname?.startsWith(`${item.href}/`)));
-
-          if (!item.active) {
-            return (
-              <div
-                key={item.title}
-                className={cn(
-                  'flex items-center gap-3 rounded-lg px-3 py-2 text-xs text-muted-foreground/60 cursor-not-allowed select-none',
-                  collapsed && 'justify-center px-2'
-                )}
-                title={collapsed ? `${item.title} (${item.badge})` : undefined}
-              >
-                <Icon className="h-4 w-4 shrink-0 opacity-50" />
-                {!collapsed ? (
-                  <div className="flex flex-1 items-center justify-between">
-                    <span>{item.title}</span>
-                    <span className="text-[9px] bg-muted px-1.5 py-0.5 rounded text-muted-foreground font-mono">
-                      {item.badge}
-                    </span>
-                  </div>
-                ) : null}
-              </div>
-            );
-          }
+          const isActive =
+            item.active &&
+            (pathname === item.href || (item.href !== '#' && pathname?.startsWith(`${item.href}/`)));
 
           return (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                'flex items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold transition-all duration-200 relative group',
                 isActive
-                  ? 'bg-primary text-primary-foreground font-semibold shadow-sm'
-                  : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
+                  ? 'bg-gradient-to-r from-[#7a3cff]/25 to-[#2bf0ff]/20 text-[#2bf0ff] border-l-2 border-[#2bf0ff] shadow-md shadow-[#7a3cff]/15'
+                  : 'text-slate-300 hover:bg-white/5 hover:text-white hover:translate-x-0.5',
                 collapsed && 'justify-center px-2'
               )}
               title={collapsed ? item.title : undefined}
             >
-              <Icon className="h-4 w-4 shrink-0" />
-              {!collapsed ? <span>{item.title}</span> : null}
+              <Icon
+                className={cn(
+                  'h-4 w-4 shrink-0 transition-transform duration-200',
+                  isActive ? 'text-[#2bf0ff] scale-110' : 'text-slate-400 group-hover:text-slate-200'
+                )}
+              />
+              {!collapsed ? (
+                <span className="truncate">{item.title}</span>
+              ) : null}
+              {isActive && !collapsed && (
+                <span className="ml-auto h-1.5 w-1.5 rounded-full bg-[#2bf0ff] animate-pulse" />
+              )}
             </Link>
           );
         })}
       </div>
 
       {/* Footer / Logout */}
-      <div className="border-t p-2">
+      <div className="border-t border-indigo-900/40 p-3 relative z-10">
         <button
           type="button"
           onClick={() => signOut({ callbackUrl: '/' })}
           className={cn(
-            'w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors',
+            'w-full flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors',
             collapsed && 'justify-center px-2'
           )}
-          title={collapsed ? 'Sign Out' : undefined}
+          title="Sign Out"
         >
-          <LogOut className="h-4 w-4 shrink-0" />
+          <LogOut className="h-4 w-4 shrink-0 text-red-400" />
           {!collapsed ? <span>Sign Out</span> : null}
         </button>
       </div>

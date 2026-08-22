@@ -6,7 +6,11 @@ import { ErrorBoundary } from '@/components/ui/error-boundary';
 
 export default function EmployeeLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen bg-[#080417] text-slate-100 relative selection:bg-[#2bf0ff]/30 selection:text-white">
+      {/* Subtle ambient radial glow */}
+      <div className="fixed top-0 left-1/3 w-[600px] h-[300px] bg-[#7a3cff]/5 rounded-full blur-[140px] pointer-events-none -z-10" />
+      <div className="fixed bottom-0 right-1/4 w-[500px] h-[300px] bg-[#2bf0ff]/5 rounded-full blur-[140px] pointer-events-none -z-10" />
+
       <Sidebar role={Role.EMPLOYEE} />
       <div className="flex flex-1 flex-col overflow-hidden">
         <Topbar role={Role.EMPLOYEE} />
