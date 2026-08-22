@@ -1,0 +1,202 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String    @id @default(cuid())
+  email              String    @unique
+  passwordHash       String
+  role               Role      @default(EMPLOYEE)
+  emailVerified      Boolean   @default(false)
+  mustChangePassword Boolean   @default(false)
+  verificationToken  String?
+  verificationExpiry DateTime?
+  resetToken         String?
+  resetExpiry        DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  employee           Employee?
+  sessions           Session[]
+
+  @@index([email])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+}
+
+model Employee {
+  id             String         @id @default(cuid())
+  userId         String         @unique
+  employeeId     String         @unique
+  firstName      String
+  lastName       String
+  email          String         @unique
+  phone          String?
+  dateOfBirth    DateTime?
+  gender         String?
+  address        String?
+  city           String?
+  state          String?
+  country        String?
+  postalCode     String?
+  department     String?
+  designation    String?
+  dateOfJoining  DateTime?
+  profilePicture String?
+  isActive       Boolean        @default(true)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  attendance     Attendance[]
+  auditLogs      AuditLog[]
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  leaves         Leave[]
+  notifications  Notification[]
+  payrolls       Payroll[]
+
+  @@index([department])
+  @@index([employeeId])
+  @@index([isActive])
+}
+
+model Attendance {
+  id         String           @id @default(cuid())
+  employeeId String
+  date       DateTime         @db.Date
+  checkIn    DateTime?
+  checkOut   DateTime?
+  status     AttendanceStatus @default(ABSENT)
+  totalHours Float?
+  notes      String?
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+  employee   Employee         @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@unique([employeeId, date])
+  @@index([employeeId])
+  @@index([date])
+  @@index([status])
+}
+
+model Leave {
+  id           String      @id @default(cuid())
+  employeeId   String
+  type         LeaveType
+  status       LeaveStatus @default(PENDING)
+  startDate    DateTime    @db.Date
+  endDate      DateTime    @db.Date
+  totalDays    Int
+  reason       String
+  hrComment    String?
+  approvedById String?
+  approvedAt   DateTime?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  employee     Employee    @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId])
+  @@index([status])
+  @@index([startDate, endDate])
+}
+
+model Payroll {
+  id            String    @id @default(cuid())
+  employeeId    String
+  month         Int
+  year          Int
+  basicSalary   Float
+  allowances    Float     @default(0)
+  deductions    Float     @default(0)
+  bonus         Float     @default(0)
+  netSalary     Float
+  currency      String    @default("INR")
+  paymentStatus String    @default("PENDING")
+  paymentDate   DateTime?
+  notes         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  createdById   String?
+  employee      Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@unique([employeeId, month, year])
+  @@index([employeeId])
+  @@index([month, year])
+}
+
+model Notification {
+  id         String           @id @default(cuid())
+  employeeId String
+  type       NotificationType
+  title      String
+  message    String
+  isRead     Boolean          @default(false)
+  metadata   Json?
+  createdAt  DateTime         @default(now())
+  employee   Employee         @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId])
+  @@index([isRead])
+  @@index([createdAt])
+}
+
+model AuditLog {
+  id          String    @id @default(cuid())
+  employeeId  String?
+  action      String
+  entity      String
+  entityId    String
+  oldValue    Json?
+  newValue    Json?
+  performedBy String
+  createdAt   DateTime  @default(now())
+  employee    Employee? @relation(fields: [employeeId], references: [id])
+
+  @@index([entity, entityId])
+  @@index([performedBy])
+  @@index([createdAt])
+}
+
+enum Role {
+  EMPLOYEE
+  HR
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  HALF_DAY
+  LEAVE
+}
+
+enum LeaveType {
+  PAID
+  SICK
+  UNPAID
+}
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum NotificationType {
+  LEAVE_SUBMITTED
+  LEAVE_APPROVED
+  LEAVE_REJECTED
+  PAYROLL_UPDATED
+  GENERAL
+}
