@@ -4,6 +4,41 @@ Dayflow is a modern, enterprise-ready Human Resource Management System built wit
 
 ---
 
+## 🏆 Quick Evaluation Guide for Judges
+
+### Option 1: Live Deployed Portal (Zero Setup Required)
+👉 **Live URL**: [https://dayflow-hrms-phi.vercel.app](https://dayflow-hrms-phi.vercel.app)
+
+#### 🔑 Demo Accounts:
+| Role | Email / Login ID | Password | Access Level |
+| :--- | :--- | :--- | :--- |
+| **HR Administrator** | `admin.hr@dayflow.com` | `Admin123!` | Full HR console, employee approvals, payroll & metrics |
+| **Staff Employee** | `alex.rivera@dayflow.com` | `Employee123!` | Attendance check-in, leave application, profile & payslips |
+
+*(You can also use the 1-click Demo Fill buttons directly on the landing page!)*
+
+---
+
+### Option 2: 30-Second Local Run (Clone & Run)
+The repository is pre-configured with zero-config cloud database fallbacks:
+
+```bash
+# 1. Clone repository
+git clone https://github.com/AbhinavSharma-BLR/dayflow-hrms.git
+cd dayflow-hrms
+
+# 2. Install dependencies
+npm install
+
+# 3. Setup environment (pre-configured demo Neon DB)
+cp .env.example .env.local
+
+# 4. Generate Prisma & start development server
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
 ## 🏗 Architecture & Layers
 
 Dayflow follows a strict layered monorepo architecture:
