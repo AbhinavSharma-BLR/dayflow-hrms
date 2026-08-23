@@ -4,8 +4,11 @@ const DEMO_DATABASE_URL =
   'postgresql://neondb_owner:npg_KpuaCXfL0cO5@ep-quiet-grass-a8z1bhyy.eastus2.azure.neon.tech/neondb?sslmode=require';
 
 // Safe demo fallbacks for seamless 1-click evaluation without manual .env setup
-if (!process.env.DATABASE_URL && typeof window === 'undefined') {
-  process.env.DATABASE_URL = DEMO_DATABASE_URL;
+let activeDatabaseUrl = process.env.DATABASE_URL;
+
+// If Vercel has an old/paused Supabase URL, force override to the active Neon database
+if (!activeDatabaseUrl || activeDatabaseUrl.includes('supabase.co')) {
+  activeDatabaseUrl = DEMO_DATABASE_URL;
 }
 
 if (!process.env.AUTH_SECRET) {
@@ -22,7 +25,7 @@ const globalForPrisma = globalThis as unknown as {
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
-    datasourceUrl: process.env.DATABASE_URL || DEMO_DATABASE_URL,
+    datasourceUrl: activeDatabaseUrl,
     log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
   });
 
