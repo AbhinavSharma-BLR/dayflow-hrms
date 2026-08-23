@@ -108,8 +108,30 @@ export default function Home() {
         return;
       }
 
-      toast.success('Signed in successfully!');
-      window.location.href = '/dashboard';
+      toast.success('Signed in successfully! Redirecting...');
+
+      // Direct fast redirect by checking session
+      try {
+        const sessionRes = await fetch('/api/auth/session');
+        const sessionData = await sessionRes.json();
+        const user = sessionData?.user;
+        if (user?.mustChangePassword) {
+          window.location.replace('/change-password');
+          return;
+        }
+        if (user?.role === 'HR') {
+          window.location.replace('/hr/dashboard');
+          return;
+        }
+        if (user?.role === 'EMPLOYEE') {
+          window.location.replace('/employee/dashboard');
+          return;
+        }
+      } catch (e) {
+        console.error('Session retrieval error:', e);
+      }
+
+      window.location.replace('/dashboard');
     } catch (err: any) {
       setLoginError(err.message || 'An unexpected error occurred during sign in');
     } finally {

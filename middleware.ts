@@ -10,13 +10,21 @@ export async function middleware(req: NextRequest) {
   try {
     const { pathname } = req.nextUrl;
 
-    // Retrieve JWT session token safely without invoking heavy Node/Prisma modules
+    // Retrieve JWT session token safely (dual check for Vercel HTTPS __Secure- prefix vs localhost)
     let token: any = null;
     try {
       token = await getToken({
         req,
         secret: AUTH_SECRET,
+        secureCookie: true,
       });
+      if (!token) {
+        token = await getToken({
+          req,
+          secret: AUTH_SECRET,
+          secureCookie: false,
+        });
+      }
     } catch {
       token = null;
     }

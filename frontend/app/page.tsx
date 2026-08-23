@@ -116,17 +116,22 @@ export default function Home() {
         const user = sessionData?.user;
 
         if (user?.mustChangePassword) {
-          window.location.href = '/change-password';
-        } else if (user?.role === 'HR') {
-          window.location.href = '/hr/dashboard';
-        } else if (user?.role === 'EMPLOYEE') {
-          window.location.href = '/employee/dashboard';
-        } else {
-          window.location.href = '/dashboard';
+          window.location.replace('/change-password');
+          return;
         }
-      } catch {
-        window.location.href = '/dashboard';
+        if (user?.role === 'HR') {
+          window.location.replace('/hr/dashboard');
+          return;
+        }
+        if (user?.role === 'EMPLOYEE') {
+          window.location.replace('/employee/dashboard');
+          return;
+        }
+      } catch (e) {
+        console.error('Session retrieval error:', e);
       }
+
+      window.location.replace('/dashboard');
     } catch (err: any) {
       setLoginError(err.message || 'An unexpected error occurred during sign in');
     } finally {
