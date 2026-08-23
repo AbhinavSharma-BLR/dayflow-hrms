@@ -103,7 +103,7 @@ export default function Home() {
         redirect: false,
       });
 
-      if (res?.error) {
+      if (res?.error || !res?.ok) {
         setLoginError('Invalid credentials. Please check your email/login ID and password.');
         return;
       }
@@ -188,11 +188,13 @@ export default function Home() {
         redirect: false,
       });
 
-      if (!signInRes?.error) {
+      if (!signInRes?.error && signInRes?.ok) {
         const targetDashboard = signupRole === 'HR' ? '/hr/dashboard' : '/employee/dashboard';
         window.location.href = targetDashboard;
       } else {
-        window.location.href = '/dashboard';
+        toast.success('Account created! Please sign in with your password.');
+        setActiveTab('signin');
+        setLoginIdOrEmail(signupEmail.trim());
       }
     } catch (err: any) {
       setSignupError(err.message || 'An unexpected error occurred during registration');
