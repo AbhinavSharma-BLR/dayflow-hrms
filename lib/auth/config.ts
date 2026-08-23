@@ -20,7 +20,8 @@ export const authConfig: NextAuthConfig = {
     process.env.AUTH_SECRET ||
     process.env.NEXTAUTH_SECRET ||
     'dayflow_hrms_development_secret_key_32bytes_minimum_length',
-  session: { strategy: 'jwt' },
+  session: { strategy: 'jwt', maxAge: 30 * 24 * 60 * 60 },
+  jwt: { maxAge: 30 * 24 * 60 * 60 },
   pages: {
     signIn: '/',
     error: '/',
