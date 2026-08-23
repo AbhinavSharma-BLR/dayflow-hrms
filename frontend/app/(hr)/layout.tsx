@@ -3,6 +3,7 @@ import { Role } from '@prisma/client';
 import { Sidebar } from '@/components/shared/sidebar';
 import { Topbar } from '@/components/shared/topbar';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
+import { AuthGuard } from '@/components/shared/auth-guard';
 
 export default function HRLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -15,7 +16,11 @@ export default function HRLayout({ children }: { children: React.ReactNode }) {
       <div className="flex flex-1 flex-col overflow-hidden">
         <Topbar role={Role.HR} />
         <main className="flex-1 overflow-y-auto p-6 md:p-8">
-          <ErrorBoundary>{children}</ErrorBoundary>
+          <ErrorBoundary>
+            <AuthGuard requiredRole="HR">
+              {children}
+            </AuthGuard>
+          </ErrorBoundary>
         </main>
       </div>
     </div>

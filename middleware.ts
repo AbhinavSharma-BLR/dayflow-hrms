@@ -116,9 +116,16 @@ export async function middleware(req: NextRequest) {
     // 6. Protect Employee routes
     if (isEmployeeRoute) {
       if (!user) {
-        return NextResponse.redirect(new URL('/', req.url));
+        const hasCookie =
+          req.cookies.get('__Secure-authjs.session-token') ||
+          req.cookies.get('authjs.session-token') ||
+          req.cookies.get('__Secure-next-auth.session-token') ||
+          req.cookies.get('next-auth.session-token');
+        if (!hasCookie) {
+          return NextResponse.redirect(new URL('/', req.url));
+        }
       }
-      if (user.role === 'HR') {
+      if (user && user.role === 'HR') {
         return NextResponse.redirect(new URL('/hr/dashboard', req.url));
       }
     }
@@ -126,9 +133,16 @@ export async function middleware(req: NextRequest) {
     // 7. Protect HR routes (HR role strictly required)
     if (isHRRoute) {
       if (!user) {
-        return NextResponse.redirect(new URL('/', req.url));
+        const hasCookie =
+          req.cookies.get('__Secure-authjs.session-token') ||
+          req.cookies.get('authjs.session-token') ||
+          req.cookies.get('__Secure-next-auth.session-token') ||
+          req.cookies.get('next-auth.session-token');
+        if (!hasCookie) {
+          return NextResponse.redirect(new URL('/', req.url));
+        }
       }
-      if (user.role !== 'HR') {
+      if (user && user.role !== 'HR') {
         return NextResponse.redirect(new URL('/employee/dashboard', req.url));
       }
     }
