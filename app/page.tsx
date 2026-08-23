@@ -11,7 +11,6 @@ import {
   User,
   KeyRound,
   Loader2,
-  Compass,
   ChevronDown,
   ArrowRight,
   Mail,
@@ -265,15 +264,6 @@ export default function Home() {
 
       {/* Top Header Floating Utility Bar */}
       <div className="fixed top-5 right-5 sm:right-8 flex items-center gap-3 z-40">
-        <a
-          href="/tunnel.html"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#2bf0ff]/40 bg-[#0a0524]/80 text-[#8fe6ff] text-xs font-semibold backdrop-blur-md hover:bg-[#0a0524] hover:border-[#2bf0ff] transition-all duration-300 shadow-lg shadow-[#2bf0ff]/10 hover:shadow-[#2bf0ff]/25 hover:scale-105"
-        >
-          <Compass className="h-3.5 w-3.5 text-[#2bf0ff] animate-spin" style={{ animationDuration: '12s' }} />
-          <span>Fullscreen 3D Tunnel</span>
-        </a>
         <div className="p-1 rounded-full border border-indigo-900/50 bg-[#0a0524]/80 backdrop-blur-md">
           <ThemeToggle />
         </div>
