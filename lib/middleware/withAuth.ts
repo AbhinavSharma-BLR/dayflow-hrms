@@ -20,9 +20,46 @@ export async function extractAuthUser(req?: NextRequest): Promise<AuthenticatedU
     if (userId && role) {
       return { id: userId, email: email || '', role, employeeId };
     }
+
+    // 2. Direct decode from request cookies using next-auth/jwt
+    try {
+      const { getToken, decode } = await import('next-auth/jwt');
+      const AUTH_SECRET =
+        process.env.AUTH_SECRET ||
+        process.env.NEXTAUTH_SECRET ||
+        'dayflow_hrms_development_secret_key_32bytes_minimum_length';
+
+      let token: any = await getToken({ req, secret: AUTH_SECRET, secureCookie: true });
+      if (!token) {
+        token = await getToken({ req, secret: AUTH_SECRET, secureCookie: false });
+      }
+
+      if (!token) {
+        const raw =
+          req.cookies.get('__Secure-authjs.session-token')?.value ||
+          req.cookies.get('authjs.session-token')?.value ||
+          req.cookies.get('__Secure-next-auth.session-token')?.value ||
+          req.cookies.get('next-auth.session-token')?.value;
+        if (raw) {
+          token =
+            (await decode({ token: raw, secret: AUTH_SECRET, salt: '__Secure-authjs.session-token' })) ||
+            (await decode({ token: raw, secret: AUTH_SECRET, salt: 'authjs.session-token' })) ||
+            (await decode({ token: raw, secret: AUTH_SECRET, salt: '' }));
+        }
+      }
+
+      if (token?.id && token.role) {
+        return {
+          id: token.id,
+          email: token.email || '',
+          role: token.role as Role,
+          employeeId: token.employeeId,
+        };
+      }
+    } catch {}
   }
 
-  // 2. Fallback to server-side session from auth() if available
+  // 3. Fallback to server-side session from auth() if available
   try {
     const { auth } = await import('@/lib/auth');
     const session = await auth();

@@ -4,9 +4,10 @@ import * as React from 'react';
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import { Search, User as UserIcon, LogOut, ShieldCheck, Sparkles, Command } from 'lucide-react';
-import { Role } from '@prisma/client';
 import { ThemeToggle } from './theme-toggle';
 import { Input } from '@/components/ui/input';
+
+export type Role = 'HR' | 'EMPLOYEE';
 
 interface TopbarProps {
   role: Role;
@@ -18,7 +19,7 @@ export function Topbar({ role }: TopbarProps) {
   const { data: session } = useSession();
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
 
-  const displayName = session?.user?.name || (role === Role.HR ? 'HR Administrator' : 'Staff Employee');
+  const displayName = session?.user?.name || (role === 'HR' ? 'HR Administrator' : 'Staff Employee');
   const displayEmail = session?.user?.email || '';
   const displayRole = (session?.user as any)?.role || role;
   const initial = displayName.charAt(0).toUpperCase();
@@ -85,7 +86,7 @@ export function Topbar({ role }: TopbarProps) {
                 </span>
               </div>
 
-              {displayRole === Role.EMPLOYEE ? (
+              {displayRole === 'EMPLOYEE' ? (
                 <Link
                   href="/employee/profile"
                   onClick={() => setDropdownOpen(false)}

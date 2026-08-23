@@ -19,10 +19,11 @@ import {
   ChevronRight,
   Shield,
 } from 'lucide-react';
-import { Role } from '@prisma/client';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { DayflowLogo } from '@/components/shared/dayflow-logo';
+
+export type Role = 'HR' | 'EMPLOYEE';
 
 interface SidebarProps {
   role: Role;
@@ -57,7 +58,7 @@ const hrNavItems: SidebarNavItem[] = [
 export function Sidebar({ role }: SidebarProps) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = React.useState(false);
-  const items = role === Role.HR ? hrNavItems : employeeNavItems;
+  const items = role === 'HR' ? hrNavItems : employeeNavItems;
 
   return (
     <aside
@@ -79,7 +80,7 @@ export function Sidebar({ role }: SidebarProps) {
                 Dayflow HRMS
               </span>
               <span className="text-[10px] font-mono text-[#2bf0ff] font-semibold tracking-wider">
-                {role === Role.HR ? 'ADMIN PORTAL' : 'EMPLOYEE OS'}
+                {role === 'HR' ? 'ADMIN PORTAL' : 'EMPLOYEE OS'}
               </span>
             </div>
           </Link>

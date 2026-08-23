@@ -1,6 +1,8 @@
-import { Role, AttendanceStatus, LeaveType, LeaveStatus, NotificationType } from '@prisma/client';
-
-export type { Role, AttendanceStatus, LeaveType, LeaveStatus, NotificationType };
+export type Role = 'HR' | 'EMPLOYEE';
+export type AttendanceStatus = 'PRESENT' | 'ABSENT' | 'HALF_DAY' | 'LEAVE';
+export type LeaveType = 'CASUAL' | 'SICK' | 'MATERNITY' | 'PATERNITY' | 'UNPAID';
+export type LeaveStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
+export type NotificationType = 'LEAVE_REQUEST' | 'LEAVE_STATUS' | 'PAYROLL_GENERATED' | 'ATTENDANCE_ALERT' | 'SYSTEM';
 
 export interface ApiResponse<T = unknown> {
   success: boolean;
