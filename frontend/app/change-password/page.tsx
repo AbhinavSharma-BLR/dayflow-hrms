@@ -59,8 +59,9 @@ export default function ChangePasswordPage() {
         },
       });
 
-      router.push('/employee/dashboard');
-      router.refresh();
+      const userRole = (session?.user as any)?.role;
+      const targetDashboard = userRole === 'HR' ? '/hr/dashboard' : '/employee/dashboard';
+      window.location.href = targetDashboard;
     } catch (err: any) {
       setErrorMessage(err.message || 'An unexpected error occurred');
     } finally {
