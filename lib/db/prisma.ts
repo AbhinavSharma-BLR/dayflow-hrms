@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 
 const DEMO_DATABASE_URL =
-  'postgresql://neondb_owner:npg_KpuaCXfL0cO5@ep-quiet-grass-a8z1bhyy.eastus2.azure.neon.tech/neondb?sslmode=require';
+  'postgresql://neondb_owner:npg_KpuaCU0xW4nj@ep-jolly-violet-ayvv6x6l.c-5.us-east-2.aws.neon.tech/neondb?sslmode=require';
 
 // Safe demo fallbacks for seamless 1-click evaluation without manual .env setup
 // Unconditionally force the working Neon DB to bypass ANY broken Vercel environment variables
