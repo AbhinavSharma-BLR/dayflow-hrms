@@ -4,6 +4,12 @@ import { NextRequest, NextResponse } from 'next/server';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+const vercelUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL || process.env.NEXT_PUBLIC_APP_URL || 'dayflow-hrms-phi.vercel.app';
+const baseUrl = vercelUrl.startsWith('http') ? vercelUrl : `https://${vercelUrl}`;
+
+process.env.NEXTAUTH_URL = baseUrl;
+process.env.AUTH_URL = baseUrl;
+
 async function safeHandler(req: NextRequest) {
   try {
     const res = await handlers.POST(req);
