@@ -53,7 +53,7 @@ export default function Home() {
   const [phone, setPhone] = React.useState('');
   const [signupPassword, setSignupPassword] = React.useState('');
   const [confirmPassword, setConfirmPassword] = React.useState('');
-  const [signupRole, setSignupRole] = React.useState<'EMPLOYEE' | 'HR'>('HR');
+  const signupRole = 'HR';
   const [showSignupPassword, setShowSignupPassword] = React.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
   const [isSignupLoading, setIsSignupLoading] = React.useState(false);
@@ -521,35 +521,22 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* Role Selector Tabs */}
+                  {/* Fixed Account Role (HR Only) */}
                   <div className="space-y-1">
                     <label className="text-xs font-semibold text-slate-300 block">
                       Account Role
                     </label>
-                    <div className="grid grid-cols-2 gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setSignupRole('HR')}
-                        className={`h-9 rounded-lg border text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-1.5 ${
-                          signupRole === 'HR'
-                            ? 'border-[#7a3cff] bg-[#7a3cff]/20 text-[#8fe6ff] shadow-sm shadow-[#7a3cff]/30'
-                            : 'border-indigo-900/40 bg-[#070318]/80 text-slate-400 hover:bg-[#180a3a]'
-                        }`}
-                      >
-                        <ShieldCheck className="h-3.5 w-3.5 text-[#2bf0ff]" /> HR Admin
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setSignupRole('EMPLOYEE')}
-                        className={`h-9 rounded-lg border text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-1.5 ${
-                          signupRole === 'EMPLOYEE'
-                            ? 'border-[#2bf0ff] bg-[#2bf0ff]/20 text-[#8fe6ff] shadow-sm shadow-[#2bf0ff]/30'
-                            : 'border-indigo-900/40 bg-[#070318]/80 text-slate-400 hover:bg-[#180a3a]'
-                        }`}
-                      >
-                        <User className="h-3.5 w-3.5 text-emerald-400" /> Employee
-                      </button>
+                    <div className="w-full h-10 px-3.5 bg-[#070318]/90 border border-[#7a3cff]/60 rounded-xl text-xs font-semibold text-[#8fe6ff] flex items-center justify-between shadow-sm shadow-[#7a3cff]/20">
+                      <span className="flex items-center gap-2">
+                        <ShieldCheck className="h-4 w-4 text-[#2bf0ff]" /> HR Administrator
+                      </span>
+                      <span className="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/30">
+                        Admin Access
+                      </span>
                     </div>
+                    <p className="text-[10.5px] text-slate-400 mt-1 pl-1">
+                      ℹ️ Employee accounts are created & provisioned exclusively by HR Admins.
+                    </p>
                   </div>
 
                   {/* Password Grid */}
