@@ -1,14 +1,27 @@
-import NextAuth from 'next-auth';
-import { authConfig } from '@/lib/auth/config';
-import { NextResponse } from 'next/server';
+import { getToken } from 'next-auth/jwt';
+import { NextRequest, NextResponse } from 'next/server';
 
-const { auth } = NextAuth(authConfig);
+const AUTH_SECRET =
+  process.env.AUTH_SECRET ||
+  process.env.NEXTAUTH_SECRET ||
+  'dayflow_hrms_development_secret_key_32bytes_minimum_length';
 
-export default auth((req) => {
+export async function middleware(req: NextRequest) {
   try {
     const { pathname } = req.nextUrl;
-    const session = req.auth;
-    const user = session?.user as any;
+
+    // Retrieve JWT session token safely without invoking heavy Node/Prisma modules
+    let token: any = null;
+    try {
+      token = await getToken({
+        req,
+        secret: AUTH_SECRET,
+      });
+    } catch {
+      token = null;
+    }
+
+    const user = token;
 
     const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/signup');
     const isEmployeeRoute = pathname.startsWith('/employee');
@@ -114,8 +127,17 @@ export default auth((req) => {
     console.error('Middleware execution error:', error);
     return NextResponse.next();
   }
-});
+}
 
 export const config = {
-  matcher: ['/', '/dashboard', '/employee/:path*', '/hr/:path*', '/login', '/signup', '/change-password', '/api/employees/:path*'],
+  matcher: [
+    '/',
+    '/dashboard',
+    '/employee/:path*',
+    '/hr/:path*',
+    '/login',
+    '/signup',
+    '/change-password',
+    '/api/employees/:path*',
+  ],
 };
