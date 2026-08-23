@@ -22,6 +22,7 @@ import {
 import { Role } from '@prisma/client';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { DayflowLogo } from '@/components/shared/dayflow-logo';
 
 interface SidebarProps {
   role: Role;
@@ -72,9 +73,7 @@ export function Sidebar({ role }: SidebarProps) {
       <div className="flex h-16 items-center justify-between border-b border-indigo-900/40 px-4 relative z-10">
         {!collapsed ? (
           <Link href="/" className="flex items-center gap-2.5 font-bold text-base tracking-wide group">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#7a3cff] to-[#2bf0ff] text-white shadow-md shadow-[#7a3cff]/30 group-hover:scale-105 transition-transform">
-              <Sparkles className="h-4 w-4" />
-            </div>
+            <DayflowLogo size={34} withGlow={false} />
             <div className="flex flex-col">
               <span className="font-extrabold text-sm tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-[#8fe6ff]">
                 Dayflow HRMS
@@ -85,8 +84,8 @@ export function Sidebar({ role }: SidebarProps) {
             </div>
           </Link>
         ) : (
-          <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#7a3cff] to-[#2bf0ff] text-white shadow-md shadow-[#7a3cff]/30">
-            <Sparkles className="h-4 w-4" />
+          <div className="mx-auto flex items-center justify-center">
+            <DayflowLogo size={32} withGlow={false} />
           </div>
         )}
         <Button

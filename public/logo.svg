@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <linearGradient id="dGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2bf0ff" />
+      <stop offset="55%" stop-color="#7a3cff" />
+      <stop offset="100%" stop-color="#ec4899" />
+    </linearGradient>
+    <linearGradient id="dInner" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2bf0ff" stop-opacity="0.45" />
+      <stop offset="100%" stop-color="#7a3cff" stop-opacity="0.1" />
+    </linearGradient>
+  </defs>
+  
+  <rect width="100" height="100" rx="22" fill="#070318" />
+
+  <!-- Rounded Modern D Outer Profile -->
+  <path
+    d="M26 20 H54 C72 20 82 32 82 50 C82 68 72 80 54 80 H26 C22 80 20 78 20 74 V26 C20 22 22 20 26 20 Z"
+    stroke="url(#dGrad)"
+    stroke-width="9"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- Modern Aerodynamic Inner Prism -->
+  <path
+    d="M38 34 H50 C60 34 66 41 66 50 C66 59 60 66 50 66 H38 V34 Z"
+    fill="url(#dInner)"
+    stroke="url(#dGrad)"
+    stroke-width="3"
+    stroke-linejoin="round"
+  />
+
+  <!-- Forward-Flow Cyber Accent Node -->
+  <circle cx="50" cy="50" r="4.5" fill="#2bf0ff" />
+</svg>

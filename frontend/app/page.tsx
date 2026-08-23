@@ -24,6 +24,7 @@ import {
 import { toast } from 'sonner';
 import { ThemeToggle } from '@/components/shared/theme-toggle';
 import { ThreeTunnelBackground } from '@/components/shared/three-tunnel-bg';
+import { DayflowLogo } from '@/components/shared/dayflow-logo';
 
 export default function Home() {
   const router = useRouter();
@@ -131,7 +132,9 @@ export default function Home() {
         console.error('Session retrieval error:', e);
       }
 
-      window.location.replace('/dashboard');
+      // Smart fallback based on identifier
+      const isHR = identifier.toLowerCase().includes('admin') || identifier.toLowerCase().includes('hr');
+      window.location.replace(isHR ? '/hr/dashboard' : '/employee/dashboard');
     } catch (err: any) {
       setLoginError(err.message || 'An unexpected error occurred during sign in');
     } finally {
@@ -293,12 +296,13 @@ export default function Home() {
           </div>
 
           {/* Crisp Glassmorphic Hero Title Plate */}
-          <div className="bg-[#070318]/90 border border-white/15 rounded-2xl px-6 py-4 shadow-2xl backdrop-blur-2xl space-y-2">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white">
+          <div className="bg-[#070318]/90 border border-white/15 rounded-2xl px-6 py-5 shadow-2xl backdrop-blur-2xl space-y-2.5 flex flex-col items-center">
+            <DayflowLogo size={52} withGlow={true} />
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white text-center">
               Smart Workforce <span className="text-cyan-300 font-black">Management System</span>
             </h1>
 
-            <p className="text-xs sm:text-sm text-slate-200 font-medium max-w-md mx-auto leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-200 font-medium max-w-md mx-auto leading-relaxed text-center">
               Automated payroll calculation, employee administration, and secure role-based portals.
             </p>
           </div>
@@ -470,24 +474,6 @@ export default function Home() {
                     </button>
                   </div>
                 </div>
-
-                {/* 1-Click Bootstrap Setup */}
-                <button
-                  type="button"
-                  onClick={handleBootstrapHR}
-                  disabled={isBootstrapping}
-                  className="w-full py-2.5 px-3 border border-[#2bf0ff]/30 bg-[#2bf0ff]/5 hover:bg-[#2bf0ff]/15 text-[#8fe6ff] hover:text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all duration-200"
-                >
-                  {isBootstrapping ? (
-                    <>
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" /> Provisioning & Auto-logging in...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="h-3.5 w-3.5 text-[#2bf0ff]" /> First-time Setup (Initialize & Auto-login HR Admin)
-                    </>
-                  )}
-                </button>
               </div>
             ) : (
               /* TAB 2: SIGN UP VIEW */

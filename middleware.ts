@@ -1,4 +1,4 @@
-import { getToken } from 'next-auth/jwt';
+import { getToken, decode } from 'next-auth/jwt';
 import { NextRequest, NextResponse } from 'next/server';
 
 const AUTH_SECRET =
@@ -6,30 +6,48 @@ const AUTH_SECRET =
   process.env.NEXTAUTH_SECRET ||
   'dayflow_hrms_development_secret_key_32bytes_minimum_length';
 
+async function resolveUserToken(req: NextRequest) {
+  // 1. Check standard getToken with secureCookie = true & false
+  try {
+    const token = await getToken({ req, secret: AUTH_SECRET, secureCookie: true });
+    if (token) return token;
+  } catch {}
+
+  try {
+    const token = await getToken({ req, secret: AUTH_SECRET, secureCookie: false });
+    if (token) return token;
+  } catch {}
+
+  // 2. Direct cookie search and decoding across all known Auth.js / NextAuth cookie variations
+  const cookiesToCheck = [
+    { name: '__Secure-authjs.session-token', salt: '__Secure-authjs.session-token' },
+    { name: 'authjs.session-token', salt: 'authjs.session-token' },
+    { name: '__Secure-next-auth.session-token', salt: '__Secure-next-auth.session-token' },
+    { name: 'next-auth.session-token', salt: 'next-auth.session-token' },
+  ];
+
+  for (const c of cookiesToCheck) {
+    const rawVal = req.cookies.get(c.name)?.value;
+    if (rawVal) {
+      try {
+        const decoded = await decode({ token: rawVal, secret: AUTH_SECRET, salt: c.salt });
+        if (decoded) return decoded;
+      } catch {}
+      try {
+        const decoded = await decode({ token: rawVal, secret: AUTH_SECRET, salt: '' });
+        if (decoded) return decoded;
+      } catch {}
+    }
+  }
+
+  return null;
+}
+
 export async function middleware(req: NextRequest) {
   try {
     const { pathname } = req.nextUrl;
 
-    // Retrieve JWT session token safely (dual check for Vercel HTTPS __Secure- prefix vs localhost)
-    let token: any = null;
-    try {
-      token = await getToken({
-        req,
-        secret: AUTH_SECRET,
-        secureCookie: true,
-      });
-      if (!token) {
-        token = await getToken({
-          req,
-          secret: AUTH_SECRET,
-          secureCookie: false,
-        });
-      }
-    } catch {
-      token = null;
-    }
-
-    const user = token;
+    const user: any = await resolveUserToken(req);
 
     const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/signup');
     const isEmployeeRoute = pathname.startsWith('/employee');
