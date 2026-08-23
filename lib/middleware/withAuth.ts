@@ -59,20 +59,22 @@ export async function extractAuthUser(req?: NextRequest): Promise<AuthenticatedU
     } catch {}
   }
 
-  // 3. Fallback to server-side session from auth() if available
-  try {
-    const { auth } = await import('@/lib/auth');
-    const session = await auth();
-    if (session?.user?.id && (session.user as any).role) {
-      return {
-        id: session.user.id,
-        email: session.user.email || '',
-        role: (session.user as any).role as Role,
-        employeeId: (session.user as any).employeeId,
-      };
+  // 3. Fallback to server-side session from auth() if available (skip in test runner)
+  if (process.env.NODE_ENV !== 'test') {
+    try {
+      const { auth } = await import('@/lib/auth');
+      const session = await auth();
+      if (session?.user?.id && (session.user as any).role) {
+        return {
+          id: session.user.id,
+          email: session.user.email || '',
+          role: (session.user as any).role as Role,
+          employeeId: (session.user as any).employeeId,
+        };
+      }
+    } catch (err) {
+      // session lookup fallback ignored
     }
-  } catch (err) {
-    // session lookup fallback ignored
   }
 
   return null;

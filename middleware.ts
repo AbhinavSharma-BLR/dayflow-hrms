@@ -46,44 +46,34 @@ async function resolveUserToken(req: NextRequest) {
 export async function middleware(req: NextRequest) {
   try {
     const { pathname } = req.nextUrl;
-
     const user: any = await resolveUserToken(req);
 
     const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/signup');
-    const isEmployeeRoute = pathname.startsWith('/employee');
-    const isHRRoute = pathname.startsWith('/hr');
     const isGenericDashboardRoute = pathname === '/dashboard';
     const isRootRoute = pathname === '/';
     const isChangePasswordRoute = pathname.startsWith('/change-password');
 
     // 1. Temporary password change rule
     if (user && user.mustChangePassword) {
-      if (!isChangePasswordRoute && !pathname.startsWith('/api')) {
+      if (!isChangePasswordRoute && !pathname.startsWith('/api') && !pathname.startsWith('/_next')) {
         return NextResponse.redirect(new URL('/change-password', req.url));
       }
     }
 
     // 2. Prevent users who don't need password change from accessing /change-password
     if (user && !user.mustChangePassword && isChangePasswordRoute) {
-      if (user.role === 'HR') {
-        return NextResponse.redirect(new URL('/hr/dashboard', req.url));
-      }
-      return NextResponse.redirect(new URL('/employee/dashboard', req.url));
+      const target = user.role === 'HR' ? '/hr/dashboard' : '/employee/dashboard';
+      return NextResponse.redirect(new URL(target, req.url));
     }
 
-    // 3. Legacy auth pages (/login, /signup) -> redirect to main landing page (/) or dashboard
+    // 3. Legacy auth pages (/login, /signup) -> redirect to appropriate destination
     if (isAuthPage) {
       if (user) {
         if (user.mustChangePassword) {
           return NextResponse.redirect(new URL('/change-password', req.url));
         }
-        if (user.role === 'HR') {
-          return NextResponse.redirect(new URL('/hr/dashboard', req.url));
-        }
-        return NextResponse.redirect(new URL('/employee/dashboard', req.url));
-      }
-      if (pathname.startsWith('/signup')) {
-        return NextResponse.redirect(new URL('/?tab=signup', req.url));
+        const target = user.role === 'HR' ? '/hr/dashboard' : '/employee/dashboard';
+        return NextResponse.redirect(new URL(target, req.url));
       }
       return NextResponse.redirect(new URL('/', req.url));
     }
@@ -93,58 +83,17 @@ export async function middleware(req: NextRequest) {
       if (!user) {
         return NextResponse.redirect(new URL('/', req.url));
       }
-      if (user.role === 'HR') {
-        return NextResponse.redirect(new URL('/hr/dashboard', req.url));
-      }
-      return NextResponse.redirect(new URL('/employee/dashboard', req.url));
+      const target = user.role === 'HR' ? '/hr/dashboard' : '/employee/dashboard';
+      return NextResponse.redirect(new URL(target, req.url));
     }
 
-    // 5. Root route handling: if authenticated, redirect to appropriate dashboard
+    // 5. Root route handling: if already authenticated with active session, go to dashboard
     if (isRootRoute) {
-      if (user) {
-        if (user.mustChangePassword) {
-          return NextResponse.redirect(new URL('/change-password', req.url));
-        }
-        if (user.role === 'HR') {
-          return NextResponse.redirect(new URL('/hr/dashboard', req.url));
-        }
-        return NextResponse.redirect(new URL('/employee/dashboard', req.url));
+      if (user && !user.mustChangePassword) {
+        const target = user.role === 'HR' ? '/hr/dashboard' : '/employee/dashboard';
+        return NextResponse.redirect(new URL(target, req.url));
       }
       return NextResponse.next();
-    }
-
-    // 6. Protect Employee routes
-    if (isEmployeeRoute) {
-      if (!user) {
-        const hasCookie =
-          req.cookies.get('__Secure-authjs.session-token') ||
-          req.cookies.get('authjs.session-token') ||
-          req.cookies.get('__Secure-next-auth.session-token') ||
-          req.cookies.get('next-auth.session-token');
-        if (!hasCookie) {
-          return NextResponse.redirect(new URL('/', req.url));
-        }
-      }
-      if (user && user.role === 'HR') {
-        return NextResponse.redirect(new URL('/hr/dashboard', req.url));
-      }
-    }
-
-    // 7. Protect HR routes (HR role strictly required)
-    if (isHRRoute) {
-      if (!user) {
-        const hasCookie =
-          req.cookies.get('__Secure-authjs.session-token') ||
-          req.cookies.get('authjs.session-token') ||
-          req.cookies.get('__Secure-next-auth.session-token') ||
-          req.cookies.get('next-auth.session-token');
-        if (!hasCookie) {
-          return NextResponse.redirect(new URL('/', req.url));
-        }
-      }
-      if (user && user.role !== 'HR') {
-        return NextResponse.redirect(new URL('/employee/dashboard', req.url));
-      }
     }
 
     // Forward user headers to downstream routes

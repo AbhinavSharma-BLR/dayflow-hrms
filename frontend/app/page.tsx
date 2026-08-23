@@ -108,32 +108,29 @@ export default function Home() {
         return;
       }
 
-      toast.success('Signed in successfully!');
+      toast.success('Signed in successfully! Redirecting...');
 
+      // Check user role from session or identifier
       try {
         const sessionRes = await fetch('/api/auth/session');
         const sessionData = await sessionRes.json();
         const user = sessionData?.user;
-
         if (user?.mustChangePassword) {
-          window.location.replace('/change-password');
+          window.location.href = '/change-password';
           return;
         }
         if (user?.role === 'HR') {
-          window.location.replace('/hr/dashboard');
+          window.location.href = '/hr/dashboard';
           return;
         }
         if (user?.role === 'EMPLOYEE') {
-          window.location.replace('/employee/dashboard');
+          window.location.href = '/employee/dashboard';
           return;
         }
-      } catch (e) {
-        console.error('Session retrieval error:', e);
-      }
+      } catch {}
 
-      // Smart fallback based on identifier
       const isHR = identifier.toLowerCase().includes('admin') || identifier.toLowerCase().includes('hr');
-      window.location.replace(isHR ? '/hr/dashboard' : '/employee/dashboard');
+      window.location.href = isHR ? '/hr/dashboard' : '/employee/dashboard';
     } catch (err: any) {
       setLoginError(err.message || 'An unexpected error occurred during sign in');
     } finally {
